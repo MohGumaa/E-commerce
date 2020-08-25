@@ -6,9 +6,8 @@ products.forEach(product => {
         if (target.classList.contains('update-cart')){
             const productId = target.dataset.product;
             const action = target.dataset.action;
-            console.log(productId,action)
             if (user === 'AnonymousUser'){
-                console.log('Not Logged in');
+                addCookieItem(productId, action);
             } else {
                updateUserOrder(productId, action);
            }
@@ -16,8 +15,36 @@ products.forEach(product => {
     })
 })
 
+
+// Add item to cookie
+function addCookieItem(productId, action){
+    console.log('Not Logged in', cart);
+
+    if (action == 'add'){
+        if(cart[productId] === undefined){
+            cart[productId] = {'quantity': 1}
+        } else {
+            cart[productId]['quantity'] += 1;
+        }
+    }
+
+    if (action == 'remove'){
+        cart[productId]['quantity'] -= 1;
+
+        if(cart[productId]['quantity'] <= 0){
+            console.log('remove Item');
+            delete cart[productId];
+        }
+    }
+
+    console.log('Cart:', cart);
+    document.cookie = 'cart=' + JSON.stringify(cart) + ";domain=;path=/";
+
+    location.reload()
+}
+
 function updateUserOrder(productId, action){
-    console.log('User is Logged in, Sending data...');
+    console.log('User is Logged in, Sending data...', csrftoken);
      fetch('/update_item/', {
         method: 'POST',
         headers: {

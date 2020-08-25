@@ -5,6 +5,7 @@
         <div class="col-md-6">
             <div class="box-element mb-2" id="form-wrapper">
                 <form action="" id="form">
+                    {% csrf_token %}
                     <div id="user-info">
                         <div class="form-field">
                             <input required class="form-control" type="text" name="name" placeholder="Name..">
@@ -68,7 +69,8 @@
     <script>
         const shipping = "{{order.shipping}}";
         // const total = '{{order.get_cart_total|floatformat:2}}';
-        const total = '{{order.get_cart_total|floatformat:2}}';
+        let total = '{{order.get_cart_total|floatformat:2}}';
+        console.log(total)
 
         if (shipping == 'False') {
             document.querySelector('#shipping-info').innerHTML= '';
@@ -87,6 +89,9 @@
 
         // Hide form and show payment method
         const form = document.querySelector('#form');
+        csrftoken = form.getElementsByTagName("input")[0].value;
+        console.log("csrftoken:", form.getElementsByTagName("input")[0].value)
+
         form.addEventListener('submit', e => {
             e.preventDefault();
             console.log('submit');
@@ -137,6 +142,10 @@
             .then(data => {
                 console.log('sucess:',data);
                 alert('Transcation completed');
+
+                cart = {}
+                document.cookie = 'cart=' + JSON.stringify(cart) + ";domain=;path=/";
+
                 window.location.href = "{% url 'store' %}"
             })
 
